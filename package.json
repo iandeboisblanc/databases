@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "main": "server/app.js",
   "dependencies": {
+    "babel": "^6.3.26",
     "body-parser": "^1.9.2",
     "express": "^4.10.1",
     "lodash": "^2.4.1",
