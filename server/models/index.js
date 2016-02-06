@@ -12,15 +12,20 @@ module.exports = {
       var content = message.message;
 
       con.query(
-        'SELECT id FROM users WHERE name = ?', username, function(err, res){
+        'SELECT id FROM chat.users WHERE name = ?', username, function(err, res){
           if(err){
-            console.log("Err:", err);
+            console.log("Select error:", err);
           }else{
-            con.query('INSERT INTO chat.messages(content, userID, room) values=(?, ?, ?)', [message, res.id, roomname], function(err, result){
+            con.query('INSERT INTO chat.messages(content,userID,room) values(?,?,?);', [content, res[0].id, roomname], function(err, result){
+            // console.log(result);
               if(err){
-                console.log("Err:", err);
+                console.log("Message error:", err);
               }else{
+                // console.log(result);
                 console.log("Inserted a message");
+                // con.query('SELECT * FROM chat.messages', function(err, ressy){
+                  // console.log(err, ressy);
+                // });
               }
             });
           }

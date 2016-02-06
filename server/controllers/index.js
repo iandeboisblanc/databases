@@ -21,6 +21,7 @@ module.exports = {
       var message = req.body;
       models.messages.post(message);
       res.writeHead(201, headers);
+      res.end("message received");
     } // a function which handles posting a message to the database
   },
 
@@ -31,6 +32,7 @@ module.exports = {
       var user = req.body;
       models.users.post(user);
       res.writeHead(201, headers);
+      res.end("sent");
     }
   }
 };
