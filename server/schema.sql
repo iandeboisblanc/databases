@@ -17,7 +17,7 @@ CREATE TABLE users (
 CREATE TABLE messages (
   ID int(20) NOT NULL AUTO_INCREMENT, 
   Content varchar(150),
-  createdAt date,
+  createdAt datetime,
   UserID int(20),
   Room varchar(50),
   primary key(ID),
@@ -26,6 +26,6 @@ CREATE TABLE messages (
 );
 
 /*  Execute this file from the command line by typing:
- *    mysql -u root < server/schema.sql
+ *    mysql -u root < server/schema.sql -p;
  *  to create the database and the tables.*/
 

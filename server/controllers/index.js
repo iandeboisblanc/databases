@@ -16,11 +16,12 @@ module.exports = {
           console.log('Error getting message Data:', err);
         } else {
           res.writeHead(200, headers);
-
           var returnResults = [];
           results.forEach(function(resultObj) {
             returnResults.push({
               username: resultObj.Name,
+              createdAt: resultObj.createdAt,
+              objectId: resultObj.ID,
               text: resultObj.Content,
               roomname: resultObj.Room
             });
@@ -33,9 +34,16 @@ module.exports = {
       //run query to put data into messages
       //insert into rooms if necessary
       var message = req.body;
-      models.messages.post(message);
-      res.writeHead(201, headers);
-      res.end("message received");
+      models.messages.post(message, function(err, results) {
+        if(err) {
+          console.log(err);
+          res.writeHead(500, headers);
+          res.end('Error posting message');
+        } else {
+          res.writeHead(201, headers);
+          res.end("message received");
+        }
+      });
     } // a function which handles posting a message to the database
   },
 
@@ -53,9 +61,16 @@ module.exports = {
     },
     post: function (req, res) {
       var user = req.body;
-      models.users.post(user);
-      res.writeHead(201, headers);
-      res.end("sent");
+      models.users.post(user, function(err, results){
+        if(err) {
+          console.log('error posting user info');
+          res.writeHead(500, headers);
+          res.end('messed up posting user');
+        } else {
+          res.writeHead(201, headers);
+          res.end('user posted!');
+        }
+      });
     }
   }
 };

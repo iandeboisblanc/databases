@@ -12,6 +12,22 @@ var app = {
   init: function() {
     // Get username
     app.username = prompt('What is your name?') || 'anonymous';
+    console.log(JSON.stringify(app.username));
+    $.ajax({
+      url: app.server + '/classes/users',
+      type: 'POST',
+      data: JSON.stringify({username: app.username}),
+      contentType: 'application/json',
+      success: function (data) {
+        console.log("We've had success!");
+        // Trigger a fetch to update the users, pass true to animate
+        // app.fetch();
+      },
+      error: function (data) {
+        console.error('chatterbox: Failed to send user info');
+      }
+    });
+
 
     // Cache jQuery selectors
     app.$main = $('#main');
@@ -34,13 +50,14 @@ var app = {
   },
 
   send: function(data) {
+    console.log(data);
     app.startSpinner();
     // Clear messages input
     app.$message.val('');
 
     // POST the message to the server
     $.ajax({
-      url: app.server,
+      url: app.server + '/classes/messages',
       type: 'POST',
       data: JSON.stringify(data),
       contentType: 'application/json',
@@ -58,22 +75,23 @@ var app = {
     $.ajax({
       url: app.server + "/classes/messages",
       type: 'GET',
+      data: {order: '-createdAt'},
       contentType: 'application/json',
       success: function(data) {
         // Don't bother if we have nothing to work with
         console.log(data);
-        if (!data.results || !data.results.length) { return; }
+        //if (!data || !data.length) { return; }
         // Get the last message
-        var mostRecentMessage = data.results[data.results.length-1];
+        var mostRecentMessage = data[data.length-1];
         var displayedRoom = $('.chat span').first().data('roomname');
         app.stopSpinner();
         // Only bother updating the DOM if we have a new message
         if (mostRecentMessage.objectId !== app.lastMessageId || app.roomname !== displayedRoom) {
           // Update the UI with the fetched rooms
-          app.populateRooms(data.results);
+          app.populateRooms(data);
 
           // Update the UI with the fetched messages
-          app.populateMessages(data.results, animate);
+          app.populateMessages(data, animate);
 
           // Store the ID of the most recent message
           app.lastMessageId = mostRecentMessage.objectId;

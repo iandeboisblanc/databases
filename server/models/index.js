@@ -14,21 +14,23 @@ module.exports = {
           }
         });
     }, // a function which produces all the messages
-    post: function (message) {
+    post: function (message, callback) {
       //open the message;
+      console.log(message);
       var username = message.username;
       var roomname = message.roomname;
-      var content = message.message;
+      var content = message.text;
       con.query(
         'SELECT id FROM chat.users WHERE name = ?', username, function(err, res){
           if(err){
             console.log("Select error:", err);
           }else{
-            con.query('INSERT INTO chat.messages(content,userID,room) values(?,?,?);', [content, res[0].id, roomname], function(err, result){
+            con.query('INSERT INTO chat.messages(content,userID,createdAt,room) values(?,?,?,?);', 
+                [content, res[0].id, new Date(), roomname], function(err, result){
               if(err){
-                console.log("Message error:", err);
+                callback(err, null);
               }else{
-                console.log("Inserted a message");
+                callback(null, result);
               }
             });
           }
@@ -49,14 +51,14 @@ module.exports = {
           }
         });
     },
-    post: function (user) {
+    post: function (user, callback) {
       var username = user.username;
       con.query(
         'INSERT INTO chat.users SET name = ?', username, function(err, result){
           if(err){
-            console.log("Err:", err);
+            callback(err, null);
           }else{
-            console.log("Inserted", result.insertId);
+            callback(null, result);
           }
         });
     }
