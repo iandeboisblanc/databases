@@ -11,7 +11,7 @@ var app = {
 
   init: function() {
     // Get username
-    app.username = window.location.search.substr(10);
+    app.username = prompt('What is your name?') || 'anonymous';
 
     // Cache jQuery selectors
     app.$main = $('#main');
