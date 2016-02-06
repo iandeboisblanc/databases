@@ -77,4 +77,3 @@ node_modules
 .flooignore
 
 ## API keys
-client/env/config.js

@@ -9,11 +9,12 @@
     "lodash": "^2.4.1",
     "morgan": "^1.4.1",
     "mysql": "^2.10.2",
+    "nodemon": "^1.8.1",
     "request": "^2.40.0",
     "sequelize": "^2.0.6"
   },
   "scripts": {
-    "start": "node ./server/app.js",
+    "start": "nodemon ./server/app.js",
     "test": "mocha server/spec/server-spec.js; RES=$?; kill %1; exit $RES",
     "postinstall": "bash pomander.sh",
     "lint": "eslint ./"
