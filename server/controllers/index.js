@@ -18,7 +18,6 @@ module.exports = {
     post: function (req, res) {
       //run query to put data into messages
       //insert into rooms if necessary
-      console.log('MESSAGE POST!');
       var message = req.body;
       models.messages.post(message);
       res.writeHead(201, headers);
@@ -29,7 +28,6 @@ module.exports = {
     // Ditto as above
     get: function (req, res) {},
     post: function (req, res) {
-      console.log('USER POST!');
       var user = req.body;
       models.users.post(user);
       res.writeHead(201, headers);
