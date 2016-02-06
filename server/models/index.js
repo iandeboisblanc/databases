@@ -1,18 +1,48 @@
-var db = require('../db');
-var con = db.connection;
+// var db = require('../db');
+// var con = db.connection;
+
+
+var Sequelize = require('sequelize');
+var db = new Sequelize('chat', 'root', 'p');
+
+var User = db.define('users', {
+  Name: Sequelize.STRING,
+  ID: {type:Sequelize.INTEGER, primaryKey:true, autoIncrement:true}
+});
+
+var Message = db.define('messages', {
+  UserID: Sequelize.INTEGER,
+  Content: Sequelize.STRING,
+  Room: Sequelize.STRING,
+  ID: {type:Sequelize.INTEGER, primaryKey:true, autoIncrement:true}
+});
+
+
+User.sync().then(function() {
+  console.log('Successfullly synced user model');
+});
+
+Message.sync().then(function() {
+  console.log('Successfullly synced message model');
+});
+
+User.hasMany(Message, {foreignKey: 'UserID'});
 
 module.exports = {
   messages: {
     get: function (callback) {
-      con.query(
-        'SELECT * FROM chat.messages a JOIN chat.users b ON a.UserID = b.ID', function(err, results) {
-          if(err) {
-            callback(err, null);
-          } else {
-            console.log('Got message data!');
-            callback(null, results);
-          }
-        });
+      Message.findAll().then(function(messages) {
+        callback(messages);
+      });
+      // con.query(
+      //   'SELECT * FROM chat.messages a JOIN chat.users b ON a.UserID = b.ID', function(err, results) {
+      //     if(err) {
+      //       callback(err, null);
+      //     } else {
+      //       console.log('Got message data!');
+      //       callback(null, results);
+      //     }
+      //   });
     }, // a function which produces all the messages
     post: function (message, callback) {
       //open the message;
@@ -41,26 +71,31 @@ module.exports = {
   users: {
     // Ditto as above.
     get: function (callback) {
-      con.query(
-        'SELECT * FROM chat.users', function(err, results) {
-          if(err) {
-            callback(err, null);
-          } else {
-            console.log('Got user data!');
-            callback(null, results);
-          }
-        });
+      User.findAll();
+      // con.query(
+      //   'SELECT * FROM chat.users', function(err, results) {
+      //     if(err) {
+      //       callback(err, null);
+      //     } else {
+      //       console.log('Got user data!');
+      //       callback(null, results);
+      //     }
+      //   });
     },
     post: function (user, callback) {
       var username = user.username;
-      con.query(
-        'INSERT INTO chat.users SET name = ?', username, function(err, result){
-          if(err){
-            callback(err, null);
-          }else{
-            callback(null, result);
-          }
+      User.upsert({Name:username})
+        .then(function(data) {
+          callback(null, data);
         });
+      // con.query(
+      //   'INSERT INTO chat.users SET name = ?', username, function(err, result){
+      //     if(err){
+      //       callback(err, null);
+      //     }else{
+      //       callback(null, result);
+      //     }
+      //   });
     }
   }
 };
