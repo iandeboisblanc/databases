@@ -11,9 +11,23 @@ var headers = {
 module.exports = {
   messages: {
     get: function (req, res) {
-      //Run query to get messages
-      res.writeHead(200, headers);
-      res.end('ended');
+      models.messages.get(function(err, results) {
+        if(err) {
+          console.log('Error getting message Data:', err);
+        } else {
+          res.writeHead(200, headers);
+
+          var returnResults = [];
+          results.forEach(function(resultObj) {
+            returnResults.push({
+              username: resultObj.Name,
+              text: resultObj.Content,
+              roomname: resultObj.Room
+            });
+          });
+          res.end(JSON.stringify(returnResults));
+        }
+      });
     }, // a function which handles a get request for all messages
     post: function (req, res) {
       //run query to put data into messages
@@ -27,7 +41,16 @@ module.exports = {
 
   users: {
     // Ditto as above
-    get: function (req, res) {},
+    get: function (req, res) {
+      models.users.get(function(err, results) {
+        if(err) {
+          console.log('Error getting user Data:', err);
+        } else {
+          res.writeHead(200, headers);
+          res.end('results');
+        }
+      });
+    },
     post: function (req, res) {
       var user = req.body;
       models.users.post(user);
