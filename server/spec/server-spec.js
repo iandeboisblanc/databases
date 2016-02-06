@@ -85,4 +85,28 @@ describe('Persistent Node Chat Server', function() {
       });
     });
   });
+
+  it('Should create one entry in users table for each unique username', function(done) {
+    // Post the user to the chat server.
+    request({ method: 'POST',
+              uri: 'http://127.0.0.1:3000/classes/users',
+              json: { username: 'Sparky' }
+    },
+    function() {
+      request({ method: 'POST',
+                uri: 'http://127.0.0.1:3000/classes/users',
+                json: { username: 'Sparky' }
+              });
+    },
+    function(){
+      var queryString = 'SELECT * FROM chat.users WHERE name = "Sparky"';
+      var queryArgs = [];
+
+      dbConnection.query(queryString, queryArgs, function(err, results) {
+        // Should have one result:
+        expect(results.length).to.equal(1);
+        done();
+      });
+    });
+  });
 });

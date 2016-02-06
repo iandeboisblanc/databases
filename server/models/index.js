@@ -26,7 +26,7 @@ module.exports = {
             console.log("Select error:", err);
           }else{
             con.query('INSERT INTO chat.messages(content,userID,createdAt,room) values(?,?,?,?);', 
-                [content, res[0].id, new Date(), roomname], function(err, result){
+            [content, res[0].id, new Date(), roomname], function(err, result){
               if(err){
                 callback(err, null);
               }else{
