@@ -18,13 +18,15 @@ module.exports = {
           res.writeHead(200, headers);
           var returnResults = [];
           results.forEach(function(resultObj) {
+            console.log('########resutlOBJ:##########',resultObj);
             returnResults.push({
-              username: resultObj.Name,
-              createdAt: resultObj.createdAt,
-              objectId: resultObj.ID,
-              text: resultObj.Content,
-              roomname: resultObj.Room
+              username: resultObj.user.dataValues.Name,
+              createdAt: resultObj.dataValues.createdAt,
+              objectId: resultObj.dataValues.ID,
+              text: resultObj.dataValues.Content,
+              roomname: resultObj.dataValues.Room
             });
+            //console.log("=>",resultObj);
           });
           res.end(JSON.stringify(returnResults));
         }

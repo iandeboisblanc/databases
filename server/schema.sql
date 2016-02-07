@@ -5,6 +5,8 @@ USE chat;
 CREATE TABLE users (
   ID int(20) NOT NULL AUTO_INCREMENT, 
   Name varchar(150),
+  createdAt datetime,
+  updatedAt datetime,
   primary key(ID)
 );
 
@@ -18,6 +20,7 @@ CREATE TABLE messages (
   ID int(20) NOT NULL AUTO_INCREMENT, 
   Content varchar(150),
   createdAt datetime,
+  updatedAt datetime,
   UserID int(20),
   Room varchar(50),
   primary key(ID),

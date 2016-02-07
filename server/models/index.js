@@ -27,76 +27,61 @@ Message.sync().then(function() {
 });
 
 User.hasMany(Message, {foreignKey: 'UserID'});
+Message.belongsTo(User);
 
 module.exports = {
   messages: {
     get: function (callback) {
-      Message.findAll().then(function(messages) {
-        callback(messages);
-      });
-      // con.query(
-      //   'SELECT * FROM chat.messages a JOIN chat.users b ON a.UserID = b.ID', function(err, results) {
-      //     if(err) {
-      //       callback(err, null);
-      //     } else {
-      //       console.log('Got message data!');
-      //       callback(null, results);
-      //     }
-      //   });
-    }, // a function which produces all the messages
+      Message.findAll({include:[User]})
+        .then(function(messages) {
+          // console.log('messages:',messages)
+          callback(null, messages);
+        })
+        .catch(function(err) {
+          callback(err, null);
+        });
+    },
     post: function (message, callback) {
-      //open the message;
-      console.log(message);
+      // console.log(message);
       var username = message.username;
       var roomname = message.roomname;
       var content = message.text;
-      con.query(
-        'SELECT id FROM chat.users WHERE name = ?', username, function(err, res){
-          if(err){
-            console.log("Select error:", err);
-          }else{
-            con.query('INSERT INTO chat.messages(content,userID,createdAt,room) values(?,?,?,?);', 
-            [content, res[0].id, new Date(), roomname], function(err, result){
-              if(err){
-                callback(err, null);
-              }else{
-                callback(null, result);
-              }
-            });
-          }
-        });
+      User.findAll({where:{Name:username}})
+        .then(function(userResults) {
+          Message.upsert({
+            Content:content,
+            UserID:userResults[0].dataValues.ID,
+            Room:roomname
+          })
+          .then(function(data) {
+            callback(null, data);
+          })
+          .catch(function(err) {
+            callback(err, null);
+          });
+      });
     }
   },
 
   users: {
-    // Ditto as above.
     get: function (callback) {
-      User.findAll();
-      // con.query(
-      //   'SELECT * FROM chat.users', function(err, results) {
-      //     if(err) {
-      //       callback(err, null);
-      //     } else {
-      //       console.log('Got user data!');
-      //       callback(null, results);
-      //     }
-      //   });
+      User.findAll()
+        .then(function(data) {
+          callback(null,data);
+        })
+        .catch(function(err) {
+          callback(err, null);
+        });
     },
     post: function (user, callback) {
       var username = user.username;
       User.upsert({Name:username})
         .then(function(data) {
           callback(null, data);
+        })
+        .catch(function(err) {
+          callback(err, null);
         });
-      // con.query(
-      //   'INSERT INTO chat.users SET name = ?', username, function(err, result){
-      //     if(err){
-      //       callback(err, null);
-      //     }else{
-      //       callback(null, result);
-      //     }
-      //   });
     }
   }
 };
-
